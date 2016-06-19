@@ -18,10 +18,10 @@ def maxOfImages(listeImages):
     
     return(reducingLigne, reducingCol)
     
-# ajoute du noir sur les images pour les redimensionner
+# redimmensionne les images au max
 def reshapeWithoutBlack(listeImages):
     maxLigne, maxCol = maxOfImages(listeImages)
-    listeImagesReshaped = list(map(lambda x: x.resize(maxLigne, maxCol, 0),listeImages))
+    listeImagesReshaped = list(map(lambda x: x.resize((maxLigne, maxCol), 0),listeImages))
     
     return(listeImagesReshaped)
     
