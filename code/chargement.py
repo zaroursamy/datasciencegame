@@ -6,7 +6,7 @@ import os
 import numpy as np
 #from matplotlib import pyplot as plt
 import pandas as pd
-from PIL import Image#, ImageOps
+from PIL import Image, ImageOps
 from sklearn.cross_validation import train_test_split
 
 # chemin
