@@ -21,14 +21,14 @@ from sklearn.utils.fixes import sp_version
 # test sur une image en niveaux de gris
 img = Image.open("roof_images\\-1191173.jpg")
 img = ImageOps.grayscale(img)
-img = np.asarray(img)
-img = img.astype(np.float)
+img2 = np.asarray(img)
+img2 = img2.astype(np.float)
 
 # taille des patchs (les prendre assez petits pour apprendre)
-patch_size = (10,10)
+patch_size = (5,5)
 
 # reforme une image en une collection de patches, puis la normalise
-data = extract_patches_2d(img, patch_size)
+data = extract_patches_2d(img2, patch_size)
 data = data.reshape(data.shape[0], -1)
 data -= np.mean(data, axis=0)
 data /= np.std(data, axis=0)
@@ -37,25 +37,25 @@ data /= np.std(data, axis=0)
 # initialisation d'un dictionnaire
 # n_components: taille du dictionnaire
 # on fit le dictionnaire sur l'image de base normalisée
-dico = MiniBatchDictionaryLearning(n_components=100, alpha=1, n_iter=500)
+dico = MiniBatchDictionaryLearning(n_components=1000, alpha=1, n_iter=500)
 V = dico.fit(data).components_
 
+"""
 # on enleve le bruit que l'on suppose gaussien
 data = data = extract_patches_2d(img, patch_size)
 data = data.reshape(data.shape[0], -1)
 intercept = np.mean(data, axis=0)
 data -= intercept
+"""
 
 # définition des algos de transformations (OMP avec 1 et 2 atomes, LAR regression 5 atomes, et autre chose )
-transform_algorithms = [
-    ('Orthogonal Matching Pursuit\n1 atom', 'omp',
-     {'transform_n_nonzero_coefs': 1}),
-    ('Orthogonal Matching Pursuit\n2 atoms', 'omp',
-     {'transform_n_nonzero_coefs': 2})]
-     """,
-    ('Least-angle regression\n5 atoms', 'lars',
-     {'transform_n_nonzero_coefs': 5}),
-    ('Thresholding\n alpha=0.1', 'threshold', {'transform_alpha': .1})"""
+transform_algorithms = [('omp1', 'omp',{'transform_n_nonzero_coefs': 1}),('omp2', 'omp',{'transform_n_nonzero_coefs': 2})]
+"""
+,
+('Least-angle regression\n5 atoms', 'lars',
+{'transform_n_nonzero_coefs': 5}),
+('Thresholding\n alpha=0.1', 'threshold', {'transform_alpha': .1})
+"""
     
 
 #} reconstruction = image reconstruite
@@ -66,16 +66,16 @@ for title, transform_algorithm, kwargs in transform_algorithms:
     code = dico.transform(data)
     patches = np.dot(code, V)
 
-    if transform_algorithm == 'threshold':
+    """if transform_algorithm == 'threshold':
         patches -= patches.min()
         patches /= patches.max()
 
-    patches += intercept
+    #patches += intercept
     patches = patches.reshape(len(data), *patch_size)
     if transform_algorithm == 'threshold':
         patches -= patches.min()
         patches /= patches.max()
         reconstructions[title][:, width // 2:] = reconstruct_from_patches_2d(
-        patches, (height, width // 2))
+        patches, (height, width // 2))"""
 
 
