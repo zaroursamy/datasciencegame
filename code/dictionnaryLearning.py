@@ -20,12 +20,13 @@ from sklearn.utils.fixes import sp_version
 
 # test sur une image en niveaux de gris
 img = Image.open("roof_images\\38128663.jpg")
+img = img.resize((200,200), 0)
 img = ImageOps.grayscale(img)
 img2 = np.asarray(img)
 img2 = img2.astype(np.float)
 
 # taille des patchs (les prendre assez petits pour apprendre)
-patch_size = (5,5)
+patch_size = tuple(map(lambda x: x//10, img2.shape))
 
 # reforme une image en une collection de patches, puis la normalise
 data = extract_patches_2d(img2, patch_size)
@@ -61,10 +62,13 @@ transform_algorithms = [('omp1', 'omp',{'transform_n_nonzero_coefs': 1}),('omp2'
 #} reconstruction = image reconstruite
 reconstructions = {}
 for title, transform_algorithm, kwargs in transform_algorithms:
-    reconstructions[title] = img
+    reconstructions[title] = img2.copy()
     dico.set_params(transform_algorithm=transform_algorithm, **kwargs)
     code = dico.transform(data)
     patches = np.dot(code, V)
+    patches = patches.reshape(len(data), *patch_size)
+    # on enleve les img.size[1]//2 premieres colonnes 
+    reconstructions[title][:, img.size[1]//2:] = reconstruct_from_patches_2d(patches, (img.size[0], img.size[1]//2))
 
     """if transform_algorithm == 'threshold':
         patches -= patches.min()
