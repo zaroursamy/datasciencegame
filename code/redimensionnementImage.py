@@ -8,6 +8,7 @@ from funct.ools import reduce
 
 # retourne le max de la ligne et de la colonne 
 def maxOfImages(listeImages):
+    
     # max des lignes
     mappingLigne = map(lambda x: x.size[0], listeImages)
     reducingLigne = reduce(lambda x,y: max(x,y), mappingLigne)

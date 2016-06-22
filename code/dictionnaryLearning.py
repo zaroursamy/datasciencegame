@@ -5,40 +5,49 @@ Created on Tue Jun 21 18:20:15 2016
 @author: Samy
 """
 from PIL import Image, ImageOps
-import matplotlib.pyplot as plt
 import numpy as np
-import scipy as sp
-from scipy import misc
 from sklearn.decomposition import MiniBatchDictionaryLearning
 from sklearn.feature_extraction.image import extract_patches_2d
 from sklearn.feature_extraction.image import reconstruct_from_patches_2d
-from sklearn.utils.testing import SkipTest
-from sklearn.utils.fixes import sp_version
 
 #• définition de la taille des blocs (patchs)
 
 
-# test sur une image en niveaux de gris
+# prend une image en entrée et renvoie un tableau de niveau de gris
 img = Image.open("roof_images\\38128663.jpg")
-img = img.resize((200,200), 0)
-img = ImageOps.grayscale(img)
-img2 = np.asarray(img)
-img2 = img2.astype(np.float)
+def imgToGrayArray(img, resize=False, shape=img.size):
+    if resize:
+        img = img.resize(shape, 0)
+
+    img = ImageOps.grayscale(img)
+    img2 = np.asarray(img)
+    img2 = img2.astype(np.float)
+    
+    return(img2)
+
+img2 = imgToGrayArray(img)
 
 # taille des patchs (les prendre assez petits pour apprendre)
-patch_size = tuple(map(lambda x: x//10, img2.shape))
+patch_size = tuple(map(lambda x: x//5, img2.shape))
 
 # reforme une image en une collection de patches, puis la normalise
-data = extract_patches_2d(img2, patch_size)
-data = data.reshape(data.shape[0], -1)
-data -= np.mean(data, axis=0)
-data /= np.std(data, axis=0)
+def constructPatches(img2, patch_size, scale=True):   
+    data = extract_patches_2d(img2, patch_size)
+    data = data.reshape(data.shape[0], -1)
+    
+    if scale:
+        data -= np.mean(data, axis=0)
+        data /= np.std(data, axis=0)
+    
+    return(data)
+
+data = constructPatches(img2, patch_size)
 
 # il faut n_components > ncol des images 
 # initialisation d'un dictionnaire
 # n_components: taille du dictionnaire
 # on fit le dictionnaire sur l'image de base normalisée
-dico = MiniBatchDictionaryLearning(n_components=1000, alpha=1, n_iter=500)
+dico = MiniBatchDictionaryLearning(n_components=5*img2.shape, alpha=1, n_iter=100, n_jobs=-1)#, transform_algorithm='omp')
 V = dico.fit(data).components_
 
 """
@@ -68,7 +77,8 @@ for title, transform_algorithm, kwargs in transform_algorithms:
     patches = np.dot(code, V)
     patches = patches.reshape(len(data), *patch_size)
     # on enleve les img.size[1]//2 premieres colonnes 
-    reconstructions[title][:, img.size[1]//2:] = reconstruct_from_patches_2d(patches, (img.size[0], img.size[1]//2))
+    #reconstructions[title][:, img.size[1]//2:] = reconstruct_from_patches_2d(patches, (img.size[0], img.size[1]//2))
+    reconstructions[title] = reconstruct_from_patches_2d(patches, img2.shape)
 
     """if transform_algorithm == 'threshold':
         patches -= patches.min()
