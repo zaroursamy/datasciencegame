@@ -19,7 +19,7 @@ from sklearn.utils.fixes import sp_version
 
 
 # test sur une image en niveaux de gris
-img = Image.open("roof_images\\-1191173.jpg")
+img = Image.open("roof_images\\38128663.jpg")
 img = ImageOps.grayscale(img)
 img2 = np.asarray(img)
 img2 = img2.astype(np.float)
