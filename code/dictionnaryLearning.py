@@ -18,7 +18,7 @@ path = 'C:\\Users\\Samy\\datasciencegame'
 os.chdir(path)
 
 # prend une image en entrée et renvoie un tableau de niveau de gris
-img = Image.open("roof_images\\38128663.jpg")
+img = Image.open("roof_images\\40437685.jpg")
 
 def imgToGrayArray(img, resize=False, shape=img.size):
     if resize:
@@ -29,7 +29,7 @@ def imgToGrayArray(img, resize=False, shape=img.size):
     
     return(img2)
 
-img2 = imgToGrayArray(img, True, (150,150))
+img2 = imgToGrayArray(img, True, (200,200))
 
 # taille des patchs (les prendre assez petits pour apprendre)
 patch_size = tuple(map(lambda x: x//5, img2.shape))
@@ -63,7 +63,7 @@ t1 = time() - t0
 print('temps fit dico: %.fs ' % t1)
 
 # définition des algos de transformations (OMP avec 1 et 2 atomes, LAR regression 5 atomes, et autre chose )
-transform_algorithms = [('omp1', 'omp',{'transform_n_nonzero_coefs': 10})]
+transform_algorithms = [('omp10', 'omp',{'transform_n_nonzero_coefs': 10}), ('omp5', 'omp',{'transform_n_nonzero_coefs': 5})]
 
 #} création de plusieurs images reconstruites stockées dans un dictionnaire
 def reconstructImages(transform_algorithms):
@@ -80,7 +80,9 @@ def reconstructImages(transform_algorithms):
     return(reconstructions)
 
 
-
+print('reconstruction image')
+t0 = time()
 reconstructions = reconstructImages(transform_algorithms)
-
+t1 = time() - t0
+print('temps reconstruction image: %.fs' %t1)
 
