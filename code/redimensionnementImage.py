@@ -4,7 +4,7 @@ Created on Sun Jun 19 16:07:23 2016
 
 @author: Samy
 """
-from funct.ools import reduce
+from functools import reduce
 
 # retourne le max de la ligne et de la colonne 
 def maxOfImages(listeImages):

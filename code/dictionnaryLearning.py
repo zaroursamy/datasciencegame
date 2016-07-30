@@ -29,10 +29,10 @@ def imgToGrayArray(img, resize=False, shape=img.size):
     
     return(img2)
 
-img2 = imgToGrayArray(img, True, (200,200))
+img2 = imgToGrayArray(img)
 
 # taille des patchs (les prendre assez petits pour apprendre)
-patch_size = tuple(map(lambda x: x//5, img2.shape))
+patch_size = tuple(map(lambda x: x//50, img2.shape))
 
 # reforme une image en une collection de patches, puis la normalise
 def constructPatches(img2, patch_size, scale=True):   
@@ -63,7 +63,7 @@ t1 = time() - t0
 print('temps fit dico: %.fs ' % t1)
 
 # définition des algos de transformations (OMP avec 1 et 2 atomes, LAR regression 5 atomes, et autre chose )
-transform_algorithms = [('omp10', 'omp',{'transform_n_nonzero_coefs': 10}), ('omp5', 'omp',{'transform_n_nonzero_coefs': 5})]
+transform_algorithms = [('omp5', 'omp',{'transform_n_nonzero_coefs': 5})]
 
 #} création de plusieurs images reconstruites stockées dans un dictionnaire
 def reconstructImages(transform_algorithms):
